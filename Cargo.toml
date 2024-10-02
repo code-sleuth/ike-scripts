@@ -1,0 +1,50 @@
+#    Copyright 2024 Ibrahim Mbaziira
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
+[package]
+name = "ike-scripts"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "ike-scripts"
+path = "src/main.rs"
+
+[dependencies]
+axum = { version = "0.7.5" }
+axum-extra = { version = "0.9.3", features = ["cookie"] }
+tokio = { version = "1.38.0", features = ["full"] }
+tower-http = { version = "0.5.2", features = ["fs", "cors", "trace"] }
+serde = { version = "1.0.198", features = ["default", "derive"] }
+serde_json = { version = "1.0.116", features = ["default"] }
+uuid = { version = "1.8.0", features = ["v4", "fast-rng", "serde"] }
+sqlx = { version = "0.8", features = [
+    "runtime-tokio-rustls",
+    "postgres",
+    "migrate",
+] }
+dotenvy = { version = "0.15.7" }
+tracing = { version = "0.1.40" }
+tracing-subscriber = { version = "0.3.18", features = [
+    "registry",
+    "env-filter",
+] }
+tracing-error = { version = "0.2.0" }
+thiserror = { version = "1.0.58" }
+
+[dev-dependencies]
+quickcheck = { version = "1.0.3" }
+fake = { version = "2.9.2" }
+quickcheck_macros = { version = "1.0.0" }
+wiremock = { version = "0.6.0" }
