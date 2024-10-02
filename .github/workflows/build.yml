@@ -29,6 +29,11 @@ on:
       - deploy
       - main
 
+  push:
+    branches-ignore:
+      - deploy
+      - main
+
 env:
   STAGE: dev
   REPOSITORY: ike-scripts
