@@ -25,7 +25,7 @@ path = "src/main.rs"
 axum = { version = "0.7.5" }
 axum-extra = { version = "0.9.3", features = ["cookie"] }
 tokio = { version = "1.38.0", features = ["full"] }
-tower-http = { version = "0.5.2", features = ["fs", "cors", "trace"] }
+tower-http = { version = "0.6.1", features = ["fs", "cors", "trace"] }
 serde = { version = "1.0.198", features = ["default", "derive"] }
 serde_json = { version = "1.0.116", features = ["default"] }
 uuid = { version = "1.8.0", features = ["v4", "fast-rng", "serde"] }
