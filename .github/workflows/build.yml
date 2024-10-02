@@ -30,8 +30,7 @@ on:
       - main
 
   push:
-    branches-ignore:
-      - deploy
+    branches:
       - main
 
 env:
