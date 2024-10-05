@@ -24,6 +24,8 @@ path = "src/main.rs"
 [dependencies]
 axum = { version = "0.7.5" }
 axum-extra = { version = "0.9.3", features = ["cookie"] }
+async-trait = { version = "0.1.80" }
+chrono = { version = "0.4", features = ["serde"] }
 tokio = { version = "1.38.0", features = ["full"] }
 tower-http = { version = "0.6.1", features = ["fs", "cors", "trace"] }
 serde = { version = "1.0.198", features = ["default", "derive"] }
