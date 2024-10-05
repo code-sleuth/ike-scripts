@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS embeddings (
     model VARCHAR(255),
     embedded_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     object_id UUID REFERENCES chunks(id),
-    object_type VARCHAR(20) NOT NULL
+    object_type VARCHAR(20) NOT NULL DEFAULT 'chunk'
 );
 
 -- requests table
