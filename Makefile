@@ -15,8 +15,58 @@
 SERVICE=ike-scripts
 COMMIT=$(shell sh -c 'git rev-parse --short HEAD')
 
+#------------------------------------------------------------------------------
+# Detect architecture
+#------------------------------------------------------------------------------
+ifeq "$(shell uname -p)" "arm"
+	BUILD_ARCH=arm64
+endif
+ifeq "$(shell uname -p)" "x86_64"
+	BUILD_ARCH=amd64
+endif
+
+#------------------------------------------------------------------------------
+# Detect OS
+#------------------------------------------------------------------------------
+ifeq "$(shell uname -s)" "Darwin"
+	BUILD_HOST=darwin
+endif
+ifeq "$(shell uname -s)" "Linux"
+	BUILD_HOST=linux
+endif
+
+#------------------------------------------------------------------------------
+# Set Rust target based on detected arch and OS
+#------------------------------------------------------------------------------
+ifeq ($(BUILD_HOST),darwin)
+    ifeq ($(BUILD_ARCH),arm64)
+        RUST_TARGET := aarch64-apple-darwin
+    else ifeq ($(BUILD_ARCH),amd64)
+        RUST_TARGET := x86_64-apple-darwin
+    endif
+else ifeq ($(BUILD_HOST),linux)
+    ifeq ($(BUILD_ARCH),arm64)
+        RUST_TARGET := aarch64-unknown-linux-gnu
+    else ifeq ($(BUILD_ARCH),amd64)
+        RUST_TARGET := x86_64-unknown-linux-gnu
+    endif
+endif
+
+#------------------------------------------------------------------------------
+# Docker platform based on architecture
+#------------------------------------------------------------------------------
+ifeq ($(BUILD_ARCH),arm64)
+    DOCKER_PLATFORM := linux/arm64
+else ifeq ($(BUILD_ARCH),amd64)
+    DOCKER_PLATFORM := linux/amd64
+endif
+
+.PHONY: build
+
 build:
-	cargo install cargo-watch && cargo build
+	@echo "Building for target: $(RUST_TARGET)"
+	cargo install cargo-watch
+	cargo build --target $(RUST_TARGET)
 
 run:
 	cargo watch -x run
@@ -24,11 +74,18 @@ run:
 test:
 	cargo test
 
-docker-build:
+compose-build:
 	docker compose build
 
-docker-run:
+compose-run:
 	docker compose up
+
+docker-build-linux:
+	@echo "Building image for platform: $(DOCKER_PLATFORM)"
+	docker build . -t $(SERVICE) --platform $(DOCKER_PLATFORM)
+
+docker-build:
+	docker build . -t $(SERVICE)
 
 verify-license-headers:
 	./scripts/license.sh
