@@ -130,8 +130,17 @@ jobs:
             exit 1
           fi
 
-          # Extract the first digest
-          IMAGE_DIGEST=$(echo $REPO_DIGESTS | jq -r '.[0]' | cut -d'@' -f2)
+          # Extract the digest, handling both array and string cases
+          if [[ $REPO_DIGESTS == [\[]* ]]; then
+            # It's an array, use jq to extract the first element
+            FULL_DIGEST=$(echo $REPO_DIGESTS | jq -r '.[0]')
+          else
+            # It's a single string, remove the surrounding quotes
+            FULL_DIGEST=$(echo $REPO_DIGESTS | tr -d '"')
+          fi
+
+          # Extract just the digest part (after the @)
+          IMAGE_DIGEST=$(echo $FULL_DIGEST | cut -d'@' -f2)
 
           # Check if IMAGE_DIGEST is empty
           if [ -z "$IMAGE_DIGEST" ]; then
