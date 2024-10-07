@@ -106,22 +106,21 @@ jobs:
           images: ibrahimmbaziira/ike-scripts
 
       - name: Build & Push Docker Image
-        uses: docker/bake-action@v5
-        with:
-          push: true
-          files: |
-            compose.yml
-            compose.override.yml
-          set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
-            *.attest=type=provenance
-            *.attest=type=sbom
+        run: make docker-buildx-linux
+        # uses: docker/bake-action@v5
+        # with:
+        #   push: true
+        #   files: |
+        #     compose.yml
+        #     compose.override.yml
+        #   set: |
+        #     *.cache-from=type=gha
+        #     *.cache-to=type=gha,mode=max
+        #     *.attest=type=provenance
+        #     *.attest=type=sbom
 
       - name: Generate Subject
         run: |
-          docker image rm ibrahimmbaziira/ike-scripts
-
           docker pull ibrahimmbaziira/ike-scripts:latest
 
           REPO_DIGESTS=$(docker inspect --format='{{index .RepoDigests 0}}' ibrahimmbaziira/ike-scripts:latest)
