@@ -101,7 +101,8 @@ docker-buildx-linux: setup-builder
 		--build-arg BUILD_DATE=$(BUILD_DATE) \
 		--sbom=true \
 		--provenance=true \
-		--output type=registry
+		--output type=registry \
+		$(DOCKER_BUILD_EXTRA_ARGS)
 
 docker-build-linux:
 	@echo "Building image for platform: $(DOCKER_PLATFORM)"

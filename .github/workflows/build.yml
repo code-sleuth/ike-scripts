@@ -105,8 +105,16 @@ jobs:
         with:
           images: ibrahimmbaziira/ike-scripts
 
+      - name: Cache Docker Layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Build & Push Docker Image
-        run: make docker-buildx-linux
+        run: make docker-buildx-linux DOCKER_BUILD_EXTRA_ARGS="--cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache-new,mode=max"
         # uses: docker/bake-action@v5
         # with:
         #   push: true
@@ -118,42 +126,48 @@ jobs:
         #     *.cache-to=type=gha,mode=max
         #     *.attest=type=provenance
         #     *.attest=type=sbom
+        #
 
-      - name: Generate Subject
+      - name: Move Cache
         run: |
-          docker pull ibrahimmbaziira/ike-scripts:latest
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-          REPO_DIGESTS=$(docker inspect --format='{{index .RepoDigests 0}}' ibrahimmbaziira/ike-scripts:latest)
+      # - name: Generate Subject
+      #   run: |
+      #     docker pull ibrahimmbaziira/ike-scripts:latest
 
-          if [ "$REPO_DIGESTS" == "[]" ] || [ -z "$REPO_DIGESTS" ]; then
-            echo "Error: RepoDigests is empty. The image may not have been pushed correctly."
-            exit 1
-          fi
+      #     REPO_DIGESTS=$(docker inspect --format='{{index .RepoDigests 0}}' ibrahimmbaziira/ike-scripts:latest)
 
-          # Extract the digest, handling both array and string cases
-          if [[ $REPO_DIGESTS == [\[]* ]]; then
-            # It's an array, use jq to extract the first element
-            FULL_DIGEST=$(echo $REPO_DIGESTS | jq -r '.[0]')
-          else
-            # It's a single string, remove the surrounding quotes
-            FULL_DIGEST=$(echo $REPO_DIGESTS | tr -d '"')
-          fi
+      #     if [ "$REPO_DIGESTS" == "[]" ] || [ -z "$REPO_DIGESTS" ]; then
+      #       echo "Error: RepoDigests is empty. The image may not have been pushed correctly."
+      #       exit 1
+      #     fi
 
-          # Extract just the digest part (after the @)
-          IMAGE_DIGEST=$(echo $FULL_DIGEST | cut -d'@' -f2)
+      #     # Extract the digest, handling both array and string cases
+      #     if [[ $REPO_DIGESTS == [\[]* ]]; then
+      #       # It's an array, use jq to extract the first element
+      #       FULL_DIGEST=$(echo $REPO_DIGESTS | jq -r '.[0]')
+      #     else
+      #       # It's a single string, remove the surrounding quotes
+      #       FULL_DIGEST=$(echo $REPO_DIGESTS | tr -d '"')
+      #     fi
 
-          # Check if IMAGE_DIGEST is empty
-          if [ -z "$IMAGE_DIGEST" ]; then
-            echo "Error: Unable to extract image digest."
-            exit 1
-          fi
+      #     # Extract just the digest part (after the @)
+      #     IMAGE_DIGEST=$(echo $FULL_DIGEST | cut -d'@' -f2)
 
-          echo '{
-            "name": "ibrahimmbaziira/ike-scripts",
-            "digest": {
-              "sha256": "'$IMAGE_DIGEST'"
-            }
-          }' > subject.json
+      #     # Check if IMAGE_DIGEST is empty
+      #     if [ -z "$IMAGE_DIGEST" ]; then
+      #       echo "Error: Unable to extract image digest."
+      #       exit 1
+      #     fi
+
+      #     echo '{
+      #       "name": "ibrahimmbaziira/ike-scripts",
+      #       "digest": {
+      #         "sha256": "'$IMAGE_DIGEST'"
+      #       }
+      #     }' > subject.json
 
       - name: Image Digest
         id: pushed_image
