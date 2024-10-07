@@ -34,6 +34,15 @@ RUN cargo build --release --bin ike-scripts
 
 # build minimal image to publish
 FROM debian:buster-slim AS runtime
+ARG BUILD_DATE
+ARG BUILD_VERSION
 WORKDIR /app
 COPY --from=builder /app/target/release/ike-scripts /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/ike-scripts"]
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+    org.opencontainers.image.title="ibrahimmbaziira/ike-scripts" \
+    org.opencontainers.image.authors="Ibrahim Mbaziira <code.ibra@gmail.com>" \
+    org.opencontainers.image.source="https://github.com/code-sleuth/ike-scripts/tree/main" \
+    org.opencontainers.image.revision="${BUILD_VERSION}" \
+    org.opencontainers.image.vendor="Ibrahim Mbaziira"

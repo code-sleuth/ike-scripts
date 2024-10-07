@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-SERVICE=ike-scripts
+SERVICE=ibrahimmbaziira/ike-scripts
 COMMIT=$(shell sh -c 'git rev-parse --short HEAD')
 
 #------------------------------------------------------------------------------
@@ -61,6 +61,13 @@ else ifeq ($(BUILD_ARCH),amd64)
     DOCKER_PLATFORM := linux/amd64
 endif
 
+#------------------------------------------------------------------------------
+# Docker build args
+#------------------------------------------------------------------------------
+BUILD_VERSION ?= $(shell git rev-parse --short HEAD)
+BUILD_DATE ?= $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
+BUILDER_NAME := ike-scripts-builder
+
 .PHONY: build
 
 build:
@@ -80,12 +87,41 @@ compose-build:
 compose-run:
 	docker compose up
 
+setup-builder:
+	@echo "Setting up Docker buildx builder"
+	docker buildx inspect $(BUILDER_NAME) || docker buildx create --name $(BUILDER_NAME) --use
+
+docker-buildx-linux: setup-builder
+	@echo "BuildX image for platform: $(DOCKER_PLATFORM)"
+	docker buildx build . \
+	    --builder $(BUILDER_NAME) \
+	    --tag  $(SERVICE) \
+		--platform $(DOCKER_PLATFORM) \
+		--build-arg BUILD_VERSION=$(BUILD_VERSION) \
+		--build-arg BUILD_DATE=$(BUILD_DATE) \
+		--sbom=true \
+		--provenance=true \
+		--output type=registry
+
 docker-build-linux:
 	@echo "Building image for platform: $(DOCKER_PLATFORM)"
-	docker build . -t $(SERVICE) --platform $(DOCKER_PLATFORM)
+	docker buildx build . \
+	    --builder $(BUILDER_NAME) \
+	    --tag  $(SERVICE) \
+		--platform $(DOCKER_PLATFORM) \
+		--build-arg BUILD_VERSION=$(BUILD_VERSION) \
+		--build-arg BUILD_DATE=$(BUILD_DATE)
 
 docker-build:
-	docker build . -t $(SERVICE)
+	docker build . \
+	    --builder $(BUILDER_NAME) \
+	    --tag  $(SERVICE) \
+		--build-arg BUILD_VERSION=$(BUILD_VERSION) \
+		--build-arg BUILD_DATE=$(BUILD_DATE)
+
+clean-builder:
+	@echo "Removing Docker buildX builder"
+	docker buildx rm $(BUILDER_NAME)
 
 verify-license-headers:
 	./scripts/license.sh
