@@ -158,5 +158,5 @@ jobs:
       - name: Generate Artifact Attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: subject.json
+          subject-name: docker.io/ibrahimmbaziira/ike-scripts
           push-to-registry: true
