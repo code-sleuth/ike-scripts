@@ -159,4 +159,5 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: docker.io/ibrahimmbaziira/ike-scripts
+          subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
