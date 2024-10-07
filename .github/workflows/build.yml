@@ -159,6 +159,5 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: subject.json
-          provenance-path: provenance.json
-          # subject-digest: ${{ steps.push.outputs.digest }}
+          subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
