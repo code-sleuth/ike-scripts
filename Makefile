@@ -106,7 +106,6 @@ docker-buildx-linux: setup-builder
 docker-build-linux:
 	@echo "Building image for platform: $(DOCKER_PLATFORM)"
 	docker buildx build . \
-	    --builder $(BUILDER_NAME) \
 	    --tag  $(SERVICE) \
 		--platform $(DOCKER_PLATFORM) \
 		--build-arg BUILD_VERSION=$(BUILD_VERSION) \
@@ -114,7 +113,6 @@ docker-build-linux:
 
 docker-build:
 	docker build . \
-	    --builder $(BUILDER_NAME) \
 	    --tag  $(SERVICE) \
 		--build-arg BUILD_VERSION=$(BUILD_VERSION) \
 		--build-arg BUILD_DATE=$(BUILD_DATE)
