@@ -45,4 +45,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
     org.opencontainers.image.authors="Ibrahim Mbaziira <code.ibra@gmail.com>" \
     org.opencontainers.image.source="https://github.com/code-sleuth/ike-scripts/tree/main" \
     org.opencontainers.image.revision="${BUILD_VERSION}" \
-    org.opencontainers.image.vendor="Ibrahim Mbaziira"
+    org.opencontainers.image.vendor="Ibrahim Mbaziira" \
+    org.opencontainers.image.version="latest" \
+    org.opencontainers.image.description="ike scripts"
