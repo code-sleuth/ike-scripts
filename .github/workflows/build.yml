@@ -116,10 +116,20 @@ jobs:
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
 
+      - name: Generate Subject
+        run: |
+          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ibrahimmbaziira/ike-scripts:latest | cut -d'@' -f2)
+          echo '{
+            "name": "ibrahimmbaziira/ike-scripts",
+            "digest": {
+              "sha256": "'$IMAGE_DIGEST'"
+            }
+          }' > subject.json
+
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ibrahimmbaziira/ike-scripts
-          subject-path: ${{ github.workspace }}
+          subject-path: subject.json
+          provenance-path: provenance.json
           # subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
