@@ -155,9 +155,15 @@ jobs:
             }
           }' > subject.json
 
+      - name: Image Digest
+        id: pushed_image
+        run: |
+          docker pull ibrahimmbaziira/ike-scripts:latest
+          echo "digest=$(docker inspect ibrahimmbaziira/ike-scripts:latest | jq -r '.[0].RepoDigests[0]' | cut -d'@' -f2)" >> $GITHUB_OUTPUT
+
       - name: Generate Artifact Attestation
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: docker.io/ibrahimmbaziira/ike-scripts
-          subject-digest: ${{ steps.push.outputs.digest }}
+          subject-digest: ${{ steps.pushed_image.outputs.digest }}
           push-to-registry: true
