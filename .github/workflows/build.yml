@@ -115,10 +115,29 @@ jobs:
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
+            *.attest=type=provenance
+            *.attest=type=sbom
 
       - name: Generate Subject
         run: |
-          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ibrahimmbaziira/ike-scripts:latest | cut -d'@' -f2)
+          docker pull ibrahimmbaziira/ike-scripts:latest
+
+          REPO_DIGESTS=$(docker inspect --format='{{index .RepoDigests 0}}' ibrahimmbaziira/ike-scripts:latest)
+
+          if [ "$REPO_DIGESTS" == "[]" ] || [ -z "$REPO_DIGESTS" ]; then
+            echo "Error: RepoDigests is empty. The image may not have been pushed correctly."
+            exit 1
+          fi
+
+          # Extract the first digest
+          IMAGE_DIGEST=$(echo $REPO_DIGESTS | jq -r '.[0]' | cut -d'@' -f2)
+
+          # Check if IMAGE_DIGEST is empty
+          if [ -z "$IMAGE_DIGEST" ]; then
+            echo "Error: Unable to extract image digest."
+            exit 1
+          fi
+
           echo '{
             "name": "ibrahimmbaziira/ike-scripts",
             "digest": {
