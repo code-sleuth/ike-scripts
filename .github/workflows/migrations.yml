@@ -87,7 +87,7 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-build-
 
       - name: Install SQLx CLI
-        run: cargo install sqlx-cli
+        run: cargo install sqlx-cli --lock
 
       - name: Run Migrations
         run: sqlx migrate run
