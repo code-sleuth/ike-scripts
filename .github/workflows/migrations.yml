@@ -41,7 +41,7 @@ env:
   SQLX_OFFLINE: true
 
 jobs:
-  build:
+  migrate:
     environment: dev
     runs-on: ubuntu-latest
     permissions:
