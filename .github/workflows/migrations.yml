@@ -49,7 +49,7 @@ jobs:
       packages: write
       contents: read
       attestations: write
-    name: Build
+    name: Migrate
     services:
       postgres:
         image: pgvector/pgvector:pg16
