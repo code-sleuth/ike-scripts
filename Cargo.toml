@@ -44,7 +44,7 @@ tracing-subscriber = { version = "0.3.18", features = [
 ] }
 tracing-error = { version = "0.2.0" }
 thiserror = { version = "1.0.58" }
-sqlx-cli = { version = "0.8.2" }
+# sqlx-cli = { version = "0.8.2" }
 
 [dev-dependencies]
 quickcheck = { version = "1.0.3" }
