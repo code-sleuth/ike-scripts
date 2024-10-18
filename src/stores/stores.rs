@@ -16,14 +16,23 @@
 
 use thiserror::Error;
 
-use super::{
-    Chunk, Document, DocumentMeta, DocumentTag, Download, Embedding, Request, Source, Tag,
-};
-
 #[async_trait::async_trait]
 pub trait ImporterStore {
-    async fn insert_source(&mut self, source: Source) -> Result<(), ImporterStoreError>;
-    async fn insert_content(&mut self, download: Download) -> Result<(), ImporterStoreError>;
+    async fn insert_source(&self, url: &str) -> Result<(), ImporterStoreError>;
+    async fn insert_content(
+        &self,
+        source_id: i32,
+        status_code: u32,
+        headers: &serde_json::Value,
+        body: &str,
+    ) -> Result<(), ImporterStoreError>;
+    async fn fetch_and_process_post(
+        &self,
+        base_url: i32,
+        post_id: i32,
+    ) -> Result<(), ImporterStoreError>;
+
+    async fn get_post_ids_and_process(&self, full_url: &str) -> Result<(), ImporterStoreError>;
 }
 
 #[derive(Debug, Error)]
