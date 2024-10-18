@@ -44,6 +44,8 @@ tracing-subscriber = { version = "0.3.18", features = [
 ] }
 tracing-error = { version = "0.2.0" }
 thiserror = { version = "1.0.58" }
+secrecy = { version = "0.8.0", features = ["serde"] }
+lazy_static = { version = "1.4.0" }
 # sqlx-cli = { version = "0.8.2" }
 
 [dev-dependencies]
