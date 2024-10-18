@@ -89,7 +89,12 @@ jobs:
       - name: Install SQLx CLI
         run: cargo install sqlx-cli --locked
 
-      - name: Run Migrations
+      - name: Migrate Up
         run: sqlx migrate run
+        env:
+          DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432
+
+      - name: Migrate Down
+        run: sqlx migrate revert
         env:
           DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432
